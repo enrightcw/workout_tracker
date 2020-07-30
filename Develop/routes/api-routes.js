@@ -1,1 +1,2 @@
-const db = require("./models/");
+let db = require("../models");
+
