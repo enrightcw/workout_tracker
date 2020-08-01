@@ -27,34 +27,30 @@ module.exports = function(app) {
     // Used by api.js to add an exercise to a workout
     app.put("/api/workouts/:id", ({body, params}, res) => {
         const workoutId = params.id;
-        let savedExercises = [];
+        // let savedExercises = [];
 
         // gets all the currently saved exercises in the current workout
-        db.Workout.find({_id: workoutId})
+        db.Workout.findByIdAndUpdate(workoutId, {$push: {exercises: body}}, {new: true})
             .then(dbWorkout => {
-                savedExercises = dbWorkout[0].exercises;
-                res.json(dbWorkout[0].exercises);
-                let allExercises = [...savedExercises, body]
-                console.log(allExercises)
-                updateWorkout(allExercises)
+                res.json(dbWorkout);
             })
             .catch(err => {
                 res.json(err);
             });
 
-        function updateWorkout(exercises){
-            db.Workout.findByIdAndUpdate(workoutId, {exercises: exercises}, function(err, doc){
-            if(err){
-                console.log(err)
-            }
+        // function updateWorkout(exercises){
+        //     db.Workout.findByIdAndUpdate(workoutId, {exercises: exercises}, function(err, doc){
+        //     if(err){
+        //         console.log(err)
+        //     }
 
-            })
-        }
+        //     })
+        // }
             
     })
 
     app.get("/api/workouts/range", (req, res) => {
-        db.Workout.find({})
+        db.Workout.find({}).sort({day: -1}).limit(7)
         .then(workout => {
             res.json(workout);
         })
